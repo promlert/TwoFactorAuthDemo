@@ -1,0 +1,28 @@
+﻿-- ตารางผู้ใช้ (AspNetUsers)
+CREATE TABLE AspNetUsers (
+    Id NVARCHAR(450) PRIMARY KEY,
+    UserName NVARCHAR(256) NOT NULL,
+    NormalizedUserName NVARCHAR(256) NOT NULL,
+    Email NVARCHAR(256),
+    NormalizedEmail NVARCHAR(256),
+    PasswordHash NVARCHAR(MAX),
+    SecurityStamp NVARCHAR(MAX),
+    ConcurrencyStamp NVARCHAR(MAX)
+);
+
+-- ตารางสำหรับเก็บ Secret Key ของ 2FA
+CREATE TABLE TwoFactorSecrets (
+    UserId NVARCHAR(450) PRIMARY KEY,
+    SecretKey NVARCHAR(100) NOT NULL,
+    IsTwoFactorEnabled BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id)
+);
+-- ตาราง TwoFactorRecoveryCodes เพื่อเก็บรหัสกู้คืน:
+CREATE TABLE TwoFactorRecoveryCodes (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    UserId NVARCHAR(450) NOT NULL,
+    RecoveryCode NVARCHAR(256) NOT NULL, -- เก็บรหัสที่แฮชแล้ว
+    IsUsed BIT NOT NULL DEFAULT 0,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id)
+);
